@@ -5,8 +5,12 @@ Letta — one shared growing database, three specialists, cheap scheduled crons,
 and a ledger that keeps them coordinated.
 
 Built from real lessons running the Aetherforce Knowledge Vault (AFLinks):
-7,200+ documents, a 5-volume book translation pipeline, 13-site scraping
-queue, and a family of background agents that have been running for weeks.
+over **90,000** documents, a 5-volume book translation pipeline, a multi-site
+scraping queue, and a family of background agents that have been running for
+months.
+
+It also carries the part most kits leave out — **the security rules and the
+failure modes**, each one written down because we got it wrong first.
 
 ## What you get
 
@@ -14,12 +18,19 @@ queue, and a family of background agents that have been running for weeks.
 aether-commons-kit/
 ├── README.md            ← you are here
 ├── ARCHITECTURE.md      ← the full blueprint: commons, specialists, ledger, economy
+├── SECURITY.md          ← secrets, keys, access, and what leaks
 ├── agents/
 │   ├── scout.md         ← card: the FINDER (rare texts, declassified docs, scraping)
 │   ├── scribe.md        ← card: the TRANSLATOR (non-English → English)
 │   └── librarian.md     ← card: the DATABASE BUILDER (structured records, tagging)
 ├── commons/
 │   └── README.md        ← what the shared database IS and how to keep it clean
+├── coordination/        ← how the family governs itself
+│   ├── README.md        ← the six mechanisms, and which one to build first
+│   ├── lane-registry.md ← who owns what, so nobody collides
+│   ├── review-queue.md  ← nobody ships their own work
+│   ├── boundaries.md    ← what may leave the house (three tiers + intake lane)
+│   └── failure-modes.md ← the nine ways this breaks quietly
 ├── ledger/
 │   ├── family.py        ← the coordination API (budget gate, staleness, dead links)
 │   └── README.md        ← how the family looks out for each other
@@ -36,12 +47,17 @@ aether-commons-kit/
 **2. Create the shared commons** (once, from any machine):
 
 ```bash
-letta shared-memory create living-library
-letta shared-memory create cron-coordination
+letta shared-memory create <yourname>-commons
+letta shared-memory create <yourname>-coordination
 ```
 
 These are git-backed repos on Letta Cloud. Every agent attaches them, so all
 three agents see the same growing database. This is the single source of truth.
+
+**Prefix both names with your own handle.** Shared-memory names are global to
+your account but people copy these instructions verbatim, and three families all
+naming a repo `living-library` makes every example, log, and error message
+ambiguous. Use your own prefix.
 
 **3. Create the three agents:**
 
@@ -54,12 +70,14 @@ letta agent create --name librarian --description "Builds the structured databas
 Then, on **each** agent:
 
 ```bash
-letta shared-memory attach living-library
-letta shared-memory attach cron-coordination
+letta shared-memory attach <yourname>-commons
+letta shared-memory attach <yourname>-coordination
 ```
 
 **4. Set up the coordination (once):** copy `ledger/family.py` into your
-`cron-coordination` repo (it becomes the shared ledger API).
+coordination repo (it becomes the shared ledger API). Then read
+`coordination/README.md` — it lists six mechanisms in the order you actually
+need them. Build the first two now. The rest wait until you have a reason.
 
 **5. Add the crons:** for each agent, paste the cron prompt from its card
 (`agents/scout.md`, `agents/scribe.md`, `agents/librarian.md`) into
@@ -81,6 +99,17 @@ database records into the commons and checks in to the ledger. Run
    than the same work trickled out. Crons fire rarely but fully.
 5. **The counter is the heartbeat.** If the database grows every cycle, the
    system is alive. If it stalls, the watchdog in the ledger says who slept.
+
+## Read this before you put anything online
+
+`SECURITY.md` is short and every line in it cost us something. If you read one
+file in this kit before going public, read that one.
+
+`coordination/boundaries.md` is the other. It is the file everyone skips, because
+nothing goes wrong on the day you skip it — it goes wrong a year later, when it
+cannot be undone. Write your policy *before* you have something to publish. A
+boundary decided in advance is a policy; a boundary decided at the moment of
+maximum excitement is a gamble.
 
 ## Pedagogical note
 

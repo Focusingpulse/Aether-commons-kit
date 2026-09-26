@@ -56,6 +56,40 @@ def _now_ts():
     return time.time()
 
 
+GIT_FAILURES_LOG = os.path.join(LEDGER_DIR, "ledger_push_failures.log")
+
+
+def _git(*args, timeout=20):
+    """Run a git command in LEDGER_DIR. Returns (ok, detail). Never raises."""
+    try:
+        p = subprocess.run(["git", "-C", LEDGER_DIR, *args],
+                           capture_output=True, text=True, timeout=timeout)
+        if p.returncode != 0:
+            out = (p.stderr or p.stdout or "").strip().splitlines()
+            return False, (out[-1] if out else "exit %d" % p.returncode)
+        return True, ""
+    except FileNotFoundError:
+        return False, "git not found on PATH"
+    except Exception as e:
+        return False, "%s: %s" % (type(e).__name__, e)
+
+
+def _note_failure(step, detail):
+    """Record a sync failure to a log file AND to stderr.
+
+    Silence is the bug this exists to prevent. A family whose ledger has not
+    synced for weeks looks identical to a family where nobody is working — and
+    the second one is the only one you should be alarmed by.
+    """
+    line = "%s %s FAILED: %s" % (_now_iso(), step, detail)
+    try:
+        with open(GIT_FAILURES_LOG, "a", encoding="utf-8") as f:
+            f.write(line + "\n")
+    except Exception:
+        pass
+    print("WARNING: ledger not synced — " + line, file=sys.stderr)
+
+
 def load():
     try:
         with open(LEDGER_FILE, encoding="utf-8") as f:
@@ -71,16 +105,35 @@ def load():
 
 
 def save(d):
+    """Write the ledger, then best-effort sync it to git.
+
+    Non-git use is expected and stays quiet. Every OTHER failure is recorded —
+    see _note_failure. Do not change this back to a bare `except: pass`: doing
+    so makes a broken sync indistinguishable from a quiet family.
+    """
     with open(LEDGER_FILE, "w", encoding="utf-8") as f:
         json.dump(d, f, ensure_ascii=False, indent=2)
-    # Best-effort git commit; harmless if not a git repo
-    try:
-        subprocess.run(["git", "-C", LEDGER_DIR, "pull", "--rebase", "--quiet"], capture_output=True, timeout=20)
-        subprocess.run(["git", "-C", LEDGER_DIR, "add", "cron_ledger.json"], capture_output=True, timeout=20)
-        subprocess.run(["git", "-C", LEDGER_DIR, "commit", "-m", "family ledger update"], capture_output=True, timeout=20)
-        subprocess.run(["git", "-C", LEDGER_DIR, "push", "--quiet"], capture_output=True, timeout=30)
-    except Exception:
-        pass
+
+    ok, detail = _git("pull", "--rebase", "--quiet")
+    if not ok:
+        if "not a git repository" in detail:
+            return  # standalone use — expected
+        _note_failure("pull", detail)
+        return
+
+    ok, detail = _git("add", "cron_ledger.json")
+    if not ok:
+        _note_failure("add", detail)
+        return
+
+    ok, detail = _git("commit", "-m", "family ledger update")
+    if not ok and "nothing to commit" not in detail:
+        _note_failure("commit", detail)
+        return
+
+    ok, detail = _git("push", "--quiet", timeout=30)
+    if not ok:
+        _note_failure("push", detail)
 
 
 # ---------- API ----------

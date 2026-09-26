@@ -31,7 +31,7 @@ aether-commons-kit/
 │   ├── lane-registry.md ← who owns what, so nobody collides
 │   ├── review-queue.md  ← nobody ships their own work
 │   ├── boundaries.md    ← what may leave the house (three tiers + intake lane)
-│   └── failure-modes.md ← the nine ways this breaks quietly
+│   └── failure-modes.md ← the ten ways this breaks quietly
 ├── ledger/
 │   ├── family.py        ← the coordination API (budget gate, staleness, dead links)
 │   └── README.md        ← how the family looks out for each other

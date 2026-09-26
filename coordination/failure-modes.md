@@ -102,7 +102,19 @@ create it in the same breath. Do not hand over a path you have not confirmed exi
 
 ---
 
-## The pattern behind all nine
+## 10. The substring match that always fires
+
+A leak scan looking for the word `tutor` matched `statutory`. Twice. Both hits were inside quotations of legal text.
+
+Without word boundaries, a keyword scan of any long document will find something, and the finding will be meaningless. The worse case is the mirror image: a scan whose pattern cannot match looks identical to a scan that found nothing, so you conclude the surface is clean.
+
+**Fix:** use word boundaries, scan for the *pattern* you actually care about rather than the topic word, and when a scan does fire, read **what** matched before deciding it is benign.
+
+And the discipline that matters more than the regex: **a scan result you did not inspect is not a result.** Reporting "clean" from a non-empty scan is the same error as reporting a zero without checking the pattern.
+
+---
+
+## The pattern behind all ten
 
 Each one is a check, a log, or a guard that was **structurally incapable of reporting the
 problem it existed to catch.**

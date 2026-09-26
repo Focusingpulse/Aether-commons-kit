@@ -19,6 +19,7 @@ aether-commons-kit/
 ├── README.md            ← you are here
 ├── ARCHITECTURE.md      ← the full blueprint: commons, specialists, ledger, economy
 ├── SECURITY.md          ← secrets, keys, access, and what leaks
+├── STRUCTURES.md        ← LLCs, trusts, PMAs, 508(c)(1)(a) churches: the map and the traps
 ├── agents/
 │   ├── scout.md         ← card: the FINDER (rare texts, declassified docs, scraping)
 │   ├── scribe.md        ← card: the TRANSLATOR (non-English → English)
@@ -105,11 +106,17 @@ database records into the commons and checks in to the ledger. Run
 `SECURITY.md` is short and every line in it cost us something. If you read one
 file in this kit before going public, read that one.
 
-`coordination/boundaries.md` is the other. It is the file everyone skips, because
-nothing goes wrong on the day you skip it — it goes wrong a year later, when it
-cannot be undone. Write your policy *before* you have something to publish. A
-boundary decided in advance is a policy; a boundary decided at the moment of
-maximum excitement is a gamble.
+`STRUCTURES.md` is the other one people ask for. If you are considering a trust,
+a private membership association, a 508(c)(1)(a) church, or a US entity while
+living outside the US, read it **before you pay anyone.** It maps each instrument
+to the goal it actually serves, and it names the promoter patterns from IRS
+sources so you can recognise them.
+
+`coordination/boundaries.md` is the one everyone skips, because nothing goes wrong
+on the day you skip it — it goes wrong a year later, when it cannot be undone.
+Write your policy *before* you have something to publish. A boundary decided in
+advance is a policy; a boundary decided at the moment of maximum excitement is a
+gamble.
 
 ## Pedagogical note
 

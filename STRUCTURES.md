@@ -55,7 +55,17 @@ The mechanics that decide everything:
 ### Church — 508(c)(1)(a)
 **What the provision actually is:** an exception from the *notice* requirement. Ordinarily an organisation seeking 501(c)(3) status files Form 1023. §508(c)(1)(A) excepts **churches, their integrated auxiliaries, and conventions or associations of churches** from that filing. §6033(a)(2) also excepts churches from filing Form 990. §7605(c) requires senior approval plus two pre-examination letters before a church examination.
 
-**So the much-quoted claim is TRUE:** a church does not have to file Form 1023 to be exempt.
+**So the much-quoted claim is TRUE, with one qualifier that gets dropped:** churches *that meet the 501(c)(3) requirements* are automatically exempt and do not have to apply. The exemption is automatic; **the requirements are not waived.**
+
+**What "church" means, as precisely as the IRS states it.** There is no statutory definition. The IRS uses fourteen characteristics, drawn from its own examination guidance and from court decisions, and published in Publication 1828: distinct legal existence · a recognised creed and form of worship · a definite and distinct ecclesiastical government · a formal code of doctrine and discipline · a distinct religious history · membership not associated with any other church or denomination · an organisation of ordained ministers · ministers selected after completing prescribed studies · a literature of its own · established places of worship · regular congregations · regular religious services · Sunday schools for the religious instruction of the young · schools for the preparation of its ministers.
+
+**Three things about that list that matter more than the list does:**
+
+- **It is not a checklist, and there is no minimum number.** The IRS's own training material says plainly: *"The word 'test' is misleading, as there is no minimum number of criteria an organization must meet."* It also records that **the IRS has never officially committed itself to the fourteen**, and that **no court has explicitly adopted them as settled law**. Anyone quoting "the 14-point test" as a threshold is quoting a heuristic as though it were a rule.
+- **The criteria are weighted, and one carries most of the weight: a real congregation.** Courts consistently treat an established congregation, served by an organised ministry, with regular services and religious education, as the central characteristic.
+- **And the case that closes the obvious loophole is the obvious case.** In *American Guidance Foundation v. United States*, 490 F. Supp. 304 (D.D.C. 1980), a married couple acted as ministers with their family in their own home, distributed taped religious messages through an answering machine, and coached their son each week in what was claimed to be Sunday school. The court held it was **not a church** — *"a married couple praying together in the physical solitude of their home did not constitute a 'congregation'"* — and observed that they had made no real effort to extend membership beyond the founder's immediate family.
+
+If it is a sincere gathering with actual people, this provision is genuinely useful and straightforward. If it is one person, the fourteen characteristics will not save it — and the case above is the reasoning a court will use.
 
 **And here is the half that gets left out.** The exception removes a *filing*, not the *law*. The obligations all still apply:
 
@@ -122,6 +132,31 @@ A specific marketed structure — usually described as a **"non-grantor, irrevoc
 - IRS "Abusive Trust Tax Evasion Schemes" pages — the facts, the talking points, and the Q&A
 
 **The single most useful habit:** when someone offers you a structure, **ask them what it does NOT do.** A professional will answer readily and at length. A promoter will change the subject.
+
+### "The Trinity Method" — a bundle sold as a doctrine
+
+If you are offered a **"Trinity Method"** combining a 508(c)(1)(a) church, a private membership association, and a common-law trust, here is what we found researching it.
+
+**The name is not a legal term.** Searching it against the structures it claims to describe turns up no legal literature, no IRS guidance, no case law, and no law firm using it. What the search *does* return:
+
+- A **2010 blog post by Rajiv Pant** describing a "Trinity Method of Technology Management" — Creator / Guardian / Recycler roles for a technology team's tasks, inspired by the Indian Trimurti and a Harvard Business Review article about 17th-century pirates. **Nothing to do with legal structures.**
+- A wellness company in Belgrade, an Arizona LLC registered in 2016, and an unrelated software-development methodology.
+
+So the term appears to be a name someone applied to a bundle, not a doctrine anyone developed. **The three instruments are real. The "Method" is the packaging.**
+
+**And if you have been handed a long analysis of it, examine the analysis before the claims.** The one we were sent is organised by *corporate role* — CEO, CFO, CTO, CMO, COO, then "solo entrepreneur" — which is the shape of a job-description template, not a legal analysis. It carries numbered citation markers with no reference list. Its source list is roughly seventy per cent irrelevant, and the irrelevant portion clusters on the **word** "trinity": a hospital system called Trinity Health, an OKR software company's "trinity" framework, a marketing author's "trinity" mindset, the 2010 technology blog above, plus a set of generic job-posting templates for church CFOs and CTOs.
+
+**That is a detectable pattern and worth learning, because you will be handed more documents like it.** A model searched the *name*, anchored on unrelated material that happened to share it, dressed the result in a corporate template, and produced something that reads as comprehensive while citing almost nothing relevant. **The tell is the citation salad** — real government sources mixed in with job-description PDFs and a hospital system.
+
+**Here is the part that is right, and worth keeping.** The same analysis says, correctly:
+
+- the three components "cannot be arbitrarily combined to avoid regulatory compliance"
+- "courts have consistently rejected claims that 508(c)(1)(A) status provides immunity from IRS scrutiny or creates separate classification from 501(c)(3) organizations"
+- "self-help approaches or guidance from non-attorneys can result in serious legal consequences"
+
+Those are true, and they are the most useful sentences in it.
+
+**And the accurate read is the one you probably already had.** It is not one method; it is **three separate instruments, each answering a different question, combinable in many ways.** The reason it gets sold as a single "Method" is that a package is easier to sell than three independent decisions. **Splitting a bundle into its parts is how you find out whether you want all three — and usually you do not.**
 
 ---
 
@@ -190,8 +225,8 @@ We looked at this material in September 2026 — a platform selling a 508(c)(1)(
 
 ## Sources
 
-**IRS** — Instructions for Form 5472 · Treas. Reg. §1.6038A-1 and TD 9796 · *Abusive Trust Tax Evasion Schemes* (facts, talking points, Q&A) · **AM 2023-006** (the §643 trust) · Internal Revenue Bulletin 1997-17 (the five examples) · Publication 3995 · Tax Shelter Hotline 866-775-7474 · 26 U.S.C. §508, §6033(a)(2), §7605(c), §§671–677, §643
+**IRS** — Instructions for Form 5472 · Treas. Reg. §1.6038A-1 and TD 9796 · *Abusive Trust Tax Evasion Schemes* (facts, talking points, Q&A) · **AM 2023-006** (the §643 trust) · Internal Revenue Bulletin 1997-17 (the five examples) · Publication 3995 · **Publication 1828** (the fourteen church characteristics) · IRM 7(10)69 Exempt Organizations Examination Guidelines Handbook §321.3 · IRS EO training materials on IRC 508 and on defining "church" · Tax Shelter Hotline 866-775-7474 · 26 U.S.C. §508, §6033(a)(2), §7605(c), §§671–677, §643
 **Indonesia** — PwC Indonesia Worldwide Tax Summaries (reviewed 11 June 2026) and Pocket Tax Book · OECD AEOI residency note · **PER-23/PJ/2025** · KPMG Country Tax Profile · ASEAN Briefing on corporate residency
-**Cases** — *General Conference of the Free Church of America v. Commissioner*, 71 T.C. 82 (1979) · *Fausner v. Commissioner*, 55 T.C. 620 (1971) · *NAACP v. Alabama* (1958) and the associational-privacy line
+**Cases** — *General Conference of the Free Church of America v. Commissioner*, 71 T.C. 82 (1979) · *American Guidance Foundation, Inc. v. United States*, 490 F. Supp. 304 (D.D.C. 1980) · *Fausner v. Commissioner*, 55 T.C. 620 (1971) · *De La Salle Institute v. United States*, 195 F. Supp. 891 (N.D. Cal. 1961) · *NAACP v. Alabama* (1958) and the associational-privacy line
 
 **This document is information and a source map. It is not legal or tax advice, and it deliberately does not tell you what to form.** Have a qualified professional in your own jurisdiction review anything before you act on it.

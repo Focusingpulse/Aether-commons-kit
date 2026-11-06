@@ -20,6 +20,11 @@ CLI:
   python3 family.py set-budget --mode low                          # one toggle, whole family
   python3 family.py show                                           # full status
 
+Staleness readings carry their own provenance (2026-11-06): the CLI
+`staleness` command and `staleness_report_stamped()` stamp when the report
+ran and how fresh its ledger input was, because a stale-flag built on a
+stale surface is a false flag (connector r56-r58; watchtower Issues 4-5).
+
 Python API:
   import family
   run, reason = family.should_run("scout", essential=True)
@@ -34,6 +39,10 @@ LEDGER_FILE = os.path.join(LEDGER_DIR, "cron_ledger.json")
 
 # How long a member may stay silent before being flagged (hours).
 # New/unlisted members default to 24h. Tune as your cadence evolves.
+# RULE: a limit must exceed the member's cadence PLUS the sync period of the
+# surface it is read from — a 2-day-cadence lane read through an every-other-day
+# mirror at a 19.7h limit flags stale at every check (the takedown-watch lesson,
+# connector r56/r57; ported by Watchtower, Issue 5, 2026-11-06).
 STALE_AFTER_HOURS = {"scout": 18, "scribe": 18, "librarian": 40}
 
 _dt = lambda ts: datetime.datetime.fromtimestamp(ts, tz=datetime.timezone.utc)
@@ -147,15 +156,25 @@ def should_run(member, essential=False):
     return True, f"budget {mode}; run allowed"
 
 
-def check_in(member, status="ok", summary="", entries_count=None, budget_mode=None):
-    """Record a run result. Returns the ledger dict."""
+def check_in(member, status="ok", summary="", entries_count=None, budget_mode=None, visible_at=None):
+    """Record a run result. Returns the ledger dict.
+
+    `visible_at` (optional, ISO): when this row became visible on the surface
+    being read — set by a mirror/sync operator when it merges an org-side
+    check-in, so readers can compute propagation delay (visible_at - last_run)
+    and a closing instrument can tell real silence from unsynced silence.
+    Direct writers leave it None (defaults to last_run at read time).
+    """
     d = load()
-    d["members"][member] = {
+    row = {
         "last_run": _now_iso(),
         "last_status": status,
         "last_summary": summary[:500],
         "last_details": {"entries_count": entries_count, "budget_mode": d["family_budget"].get("mode")},
     }
+    if visible_at:
+        row["visible_at"] = visible_at
+    d["members"][member] = row
     if budget_mode:
         d["family_budget"] = {"mode": budget_mode, "last_set": _now_iso(), "intent": "set by member check-in"}
     if entries_count is not None:
@@ -183,6 +202,73 @@ def staleness_report(now=None):
         if hours > limit:
             out.append((member, round(hours, 1), limit))
     return out
+
+
+def _input_stamp():
+    """Best-effort provenance of the ledger input: git HEAD of LEDGER_DIR
+    (when it is a repo) plus the ledger file's mtime. Pull before trusting."""
+    head = None
+    try:
+        r = subprocess.run(["git", "-C", LEDGER_DIR, "rev-parse", "--short", "HEAD"],
+                           capture_output=True, text=True, timeout=10)
+        if r.returncode == 0:
+            head = r.stdout.strip()
+    except Exception:
+        pass
+    mtime = None
+    try:
+        mtime = _dt(os.path.getmtime(LEDGER_FILE)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    except Exception:
+        pass
+    return {"ledger": LEDGER_FILE, "git_head": head, "ledger_mtime": mtime,
+            "note": "git pull --rebase before trusting flags"}
+
+
+def staleness_report_stamped(now=None):
+    """Staleness reading with its own provenance (2026-11-06 port of the
+    watchtower/staleness_report.py stamps fix, per connector r58 clause 4:
+    "the connector-side staleness run stamps its input").
+
+    Returns a dict:
+      {"run_at": iso,                # when THIS report ran
+       "input": {...},              # _input_stamp(): how fresh the input was
+       "stale": [ {"member", "hours_since_run", "limit", "verdict", ...} ]}
+
+    Verdicts:
+      "stale"             — the row is overdue on a fresh-enough surface.
+      "possibly-unsynced" — the row is overdue AND the input surface itself is
+                            older than the member's limit, so the silence may
+                            be a sync lag, not a stall. Re-pull before acting.
+    Rows carrying "visible_at" also report propagation_delay_h (visible_at
+    minus last_run) — how long the check-in took to reach this surface.
+    """
+    run_at = _now_iso()
+    inp = _input_stamp()
+    input_age_h = None
+    if inp.get("ledger_mtime"):
+        try:
+            m = datetime.datetime.strptime(inp["ledger_mtime"], "%Y-%m-%dT%H:%M:%SZ")
+            input_age_h = round(((now if now is not None else _now_ts()) - m.timestamp()) / 3600, 1)
+        except Exception:
+            input_age_h = None
+    out = []
+    for member, hours, limit in staleness_report(now=now):
+        rec = load()["members"].get(member, {})
+        verdict = "stale"
+        if input_age_h is not None and input_age_h > limit:
+            verdict = "possibly-unsynced"
+        entry = {"member": member, "hours_since_run": hours, "limit": limit, "verdict": verdict}
+        va = rec.get("visible_at")
+        if va:
+            try:
+                v = datetime.datetime.strptime(va, "%Y-%m-%dT%H:%M:%SZ")
+                l = datetime.datetime.strptime(rec["last_run"], "%Y-%m-%dT%H:%M:%SZ")
+                entry["visible_at"] = va
+                entry["propagation_delay_h"] = round((v - l).total_seconds() / 3600, 1)
+            except Exception:
+                pass
+        out.append(entry)
+    return {"run_at": run_at, "input": inp, "input_age_h": input_age_h, "stale": out}
 
 
 def record_dead_links(urls):
@@ -257,10 +343,19 @@ def main():
         print(reason)
         sys.exit(0 if run else 1)
     elif a.cmd == "staleness":
-        stale = staleness_report()
-        if stale:
-            for m, h, lim in stale:
-                print(f"STALE: {m} (last run {h}h ago, limit {lim}h)")
+        stamped = staleness_report_stamped()
+        print(f"run: {stamped['run_at']}")
+        head = stamped["input"].get("git_head")
+        src = f"git HEAD {head}" if head else f"ledger mtime {stamped['input'].get('ledger_mtime')}"
+        print(f"input: {src} — {stamped['input']['note']}")
+        if stamped["stale"]:
+            for e in stamped["stale"]:
+                line = f"STALE: {e['member']} (last run {e['hours_since_run']}h ago, limit {e['limit']}h)"
+                if e["verdict"] == "possibly-unsynced":
+                    line += f" [possibly-unsynced: input surface {stamped['input_age_h']}h old — re-pull before acting]"
+                if "propagation_delay_h" in e:
+                    line += f" [propagation delay {e['propagation_delay_h']}h]"
+                print(line)
         else:
             print("all members current")
     elif a.cmd == "dead-links":
